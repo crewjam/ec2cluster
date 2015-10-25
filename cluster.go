@@ -11,16 +11,16 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-// DiscoverClusterMembers returns a list of the private IP addresses of each
+// DiscoverClusterMembersByTag returns a list of the private IP addresses of each
 // EC2 instance having a tag that matches the tag on the currently running
 // instance. The tag is specified by tagName.
 //
 // For example, if your instances are tagged with a tag named `app` whose
 // value is unique per cluster, then you can invoke:
 //
-//     knownClusterMembers, err := DiscoverClusterMembers(nil, "app")
+//     knownClusterMembers, err := DiscoverClusterMembersByTag(nil, "app")
 //
-func DiscoverClusterMembers(config *aws.Config, tagName string) ([]string, error) {
+func DiscoverClusterMembersByTag(config *aws.Config, tagName string) ([]string, error) {
 	instanceID, err := discoverInstanceID()
 	if err != nil {
 		return nil, err

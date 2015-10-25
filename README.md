@@ -11,7 +11,7 @@ In this example we use all the EC2 instances tagged with the same value for
 `app` as the initial known members for a memberlist cluster:
 
     ec2TagName := "app"
-    knownMembers, err := DiscoverClusterMembers(&aws.Config{}, ec2TagName)
+    knownMembers, err := DiscoverClusterMembersByTag(&aws.Config{}, ec2TagName)
     if err != nil {
         panic(err)
     }

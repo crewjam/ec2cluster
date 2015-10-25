@@ -139,7 +139,7 @@ func (s *ClusterTest) TestDiscovery(c *C) {
 	awsConfig.WithCredentials(
 		credentials.NewStaticCredentials("AKIAJJJJJJJJJJJJJJJ", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", ""))
 
-	rv, err := DiscoverClusterMembers(awsConfig, "Name")
+	rv, err := DiscoverClusterMembersByTag(awsConfig, "Name")
 	c.Assert(err, IsNil)
 	c.Assert(rv, DeepEquals, []string{"10.0.0.12", "10.0.0.13"})
 
