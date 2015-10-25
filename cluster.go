@@ -3,7 +3,6 @@ package ec2cluster
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
 
@@ -60,7 +59,6 @@ func DiscoverClusterMembersByTag(config *aws.Config, tagName string) ([]string, 
 			},
 		},
 	}, func(resp *ec2.DescribeInstancesOutput, lastPage bool) (shouldContinue bool) {
-		log.Printf("resp=%#v", resp)
 		for _, reservation := range resp.Reservations {
 			for _, instance := range reservation.Instances {
 				rv = append(rv, *instance.PrivateIpAddress)
@@ -76,7 +74,7 @@ func DiscoverClusterMembersByTag(config *aws.Config, tagName string) ([]string, 
 }
 
 // DiscoverAdvertiseAddress returns the address that should be advertised for
-// the current node based on the current EC2 instance's public IP address
+// the current node based on the current EC2 instance's private IP address
 func DiscoverAdvertiseAddress() (string, error) {
 	return readMetadata("local-ipv4")
 }
@@ -86,7 +84,7 @@ func discoverInstanceID() (string, error) {
 }
 
 func readMetadata(suffix string) (string, error) {
-	// a nice short timeout so we don't hand too much on non-AWS boxes
+	// a nice short timeout so we don't hang too much on non-AWS boxes
 	client := http.DefaultClient
 	client.Timeout = 200 * time.Millisecond
 
