@@ -28,7 +28,6 @@ func DiscoverClusterMembersByTag(config *aws.Config, tagName string) ([]string, 
 	EC2 := ec2.New(config)
 	resp, err := EC2.DescribeInstances(&ec2.DescribeInstancesInput{
 		InstanceIds: []*string{aws.String(instanceID)},
-		MaxResults:  aws.Int64(1),
 	})
 	if err != nil {
 		return nil, err
