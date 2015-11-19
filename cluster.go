@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
@@ -19,13 +20,13 @@ import (
 //
 //     knownClusterMembers, err := DiscoverClusterMembersByTag(nil, "app")
 //
-func DiscoverClusterMembersByTag(config *aws.Config, tagName string) ([]string, error) {
+func DiscoverClusterMembersByTag(awsSession *session.Session, tagName string) ([]string, error) {
 	instanceID, err := discoverInstanceID()
 	if err != nil {
 		return nil, err
 	}
 
-	EC2 := ec2.New(config)
+	EC2 := ec2.New(awsSession)
 	resp, err := EC2.DescribeInstances(&ec2.DescribeInstancesInput{
 		InstanceIds: []*string{aws.String(instanceID)},
 	})
@@ -60,7 +61,9 @@ func DiscoverClusterMembersByTag(config *aws.Config, tagName string) ([]string, 
 	}, func(resp *ec2.DescribeInstancesOutput, lastPage bool) (shouldContinue bool) {
 		for _, reservation := range resp.Reservations {
 			for _, instance := range reservation.Instances {
-				rv = append(rv, *instance.PrivateIpAddress)
+				if instance.PrivateIpAddress != nil {
+					rv = append(rv, *instance.PrivateIpAddress)
+				}
 			}
 		}
 		return true

@@ -10,6 +10,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
+        "github.com/aws/aws-sdk-go/aws/session"
 	. "gopkg.in/check.v1"
 )
 
@@ -139,7 +140,9 @@ func (s *ClusterTest) TestDiscovery(c *C) {
 	awsConfig.WithCredentials(
 		credentials.NewStaticCredentials("AKIAJJJJJJJJJJJJJJJ", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", ""))
 
-	rv, err := DiscoverClusterMembersByTag(awsConfig, "Name")
+	awsSession := session.New(awsConfig)
+
+	rv, err := DiscoverClusterMembersByTag(awsSession, "Name")
 	c.Assert(err, IsNil)
 	c.Assert(rv, DeepEquals, []string{"10.0.0.12", "10.0.0.13"})
 
