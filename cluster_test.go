@@ -10,7 +10,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
-        "github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/aws/session"
 	. "gopkg.in/check.v1"
 )
 
@@ -69,6 +69,7 @@ func (s *ClusterTest) TestDiscovery(c *C) {
 					  <item>
 						<instanceId>i-1a2b3c4d</instanceId>
 						<imageId>ami-1a2b3c4d</imageId>
+						<launchTime>2015-12-22T10:44:05.000Z</launchTime>
 						<tagSet>
 						  <item>
 							<key>Name</key>
@@ -95,6 +96,7 @@ func (s *ClusterTest) TestDiscovery(c *C) {
 					  <item>
 						<instanceId>i-1a2b3c4d</instanceId>
 						<privateIpAddress>10.0.0.12</privateIpAddress>
+						<launchTime>2015-12-22T10:44:05.000Z</launchTime>
 					  </item>
 					</instancesSet>
 				  </item>
@@ -103,6 +105,7 @@ func (s *ClusterTest) TestDiscovery(c *C) {
 					  <item>
 						<instanceId>i-fefefefe</instanceId>
 						<privateIpAddress>10.0.0.13</privateIpAddress>
+						<launchTime>2015-12-20T10:44:05.000Z</launchTime>
 					  </item>
 					</instancesSet>
 				  </item>
@@ -144,7 +147,7 @@ func (s *ClusterTest) TestDiscovery(c *C) {
 
 	rv, err := DiscoverClusterMembersByTag(awsSession, "Name")
 	c.Assert(err, IsNil)
-	c.Assert(rv, DeepEquals, []string{"10.0.0.12", "10.0.0.13"})
+	c.Assert(rv, DeepEquals, []string{"10.0.0.13", "10.0.0.12"})
 
 	addr, err := DiscoverAdvertiseAddress()
 	c.Assert(err, IsNil)
