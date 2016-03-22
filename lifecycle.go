@@ -2,7 +2,9 @@ package ec2cluster
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -25,6 +27,8 @@ type LifecycleMessage struct {
 	EC2InstanceID        string    `json:"EC2InstanceID"`
 	LifecycleHookName    string    `json:",omitempty"`
 }
+
+var ErrLifecycleHookNotFound = errors.New("cannot find a suitable lifecycle hook")
 
 // LifecyleEventCallback is a function that is invoked for each
 // ASG lifecycle event. If the function returns a non-nil error
@@ -71,8 +75,7 @@ func (s *Cluster) WatchLifecycleEvents(cb LifecyleEventCallback) error {
 			break
 		}
 		if queueURL == "" {
-			return fmt.Errorf("cannot find any lifecycle hooks for %s",
-				*asg.AutoScalingGroupName)
+			return ErrLifecycleHookNotFound
 		}
 	}
 
@@ -115,7 +118,7 @@ func (s *Cluster) WatchLifecycleEvents(cb LifecyleEventCallback) error {
 				LifecycleActionToken:  &m.LifecycleActionToken,
 			})
 			if err != nil {
-				return err
+				log.Printf("ERROR: CompleteLifecycleAction: %s", err)
 			}
 
 			_, err = sqsSvc.DeleteMessage(&sqs.DeleteMessageInput{
