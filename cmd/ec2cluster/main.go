@@ -18,7 +18,7 @@ func main() {
 		"The instance ID of the cluster member. If not supplied, then the instance ID is determined from EC2 metadata")
 	clusterTagName := flag.String("tag", "aws:autoscaling:groupName",
 		"The instance tag that is common to all members of the cluster")
-	doWatch := flag.Bool("watch", false,
+	queueURL := flag.String("watch-queue", "",
 		"Monitor autoscaling lifecycle events for the current autoscaling group and print them to stdout as they occur")
 	flag.Parse()
 
@@ -41,8 +41,8 @@ func main() {
 	}
 	awsregion.GuessRegion(s.AwsSession.Config)
 
-	if *doWatch {
-		err := s.WatchLifecycleEvents(func(m *ec2cluster.LifecycleMessage) (bool, error) {
+	if *queueURL != "" {
+		err := s.WatchLifecycleEvents(*queueURL, func(m *ec2cluster.LifecycleMessage) (bool, error) {
 			fmt.Printf("%s\t%s\n", m.LifecycleTransition, m.EC2InstanceID)
 			return true, nil
 		})

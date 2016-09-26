@@ -22,6 +22,7 @@ type Cluster struct {
 	AwsSession *session.Session
 	InstanceID string
 	TagName    string
+	TagValue   string
 
 	instance         *ec2.Instance
 	autoScalingGroup *autoscaling.Group
@@ -57,15 +58,17 @@ func (a byLaunchTime) Less(i, j int) bool { return a[i].LaunchTime.Before(*a[j].
 // Members returns a list of cluster members in order from
 // oldest to youngest.
 func (s *Cluster) Members() ([]*ec2.Instance, error) {
-	instance, err := s.Instance()
-	if err != nil {
-		return nil, err
-	}
 
-	tagValue := ""
-	for _, tag := range instance.Tags {
-		if *tag.Key == s.TagName {
-			tagValue = *tag.Value
+	tagValue := s.TagValue
+	if tagValue == "" {
+		instance, err := s.Instance()
+		if err != nil {
+			return nil, err
+		}
+		for _, tag := range instance.Tags {
+			if *tag.Key == s.TagName {
+				tagValue = *tag.Value
+			}
 		}
 	}
 	if tagValue == "" {
@@ -75,7 +78,7 @@ func (s *Cluster) Members() ([]*ec2.Instance, error) {
 
 	ec2svc := ec2.New(s.AwsSession)
 	members := []*ec2.Instance{}
-	err = ec2svc.DescribeInstancesPages(&ec2.DescribeInstancesInput{
+	err := ec2svc.DescribeInstancesPages(&ec2.DescribeInstancesInput{
 		Filters: []*ec2.Filter{
 			&ec2.Filter{
 				Name:   aws.String(fmt.Sprintf("tag:%s", s.TagName)),
