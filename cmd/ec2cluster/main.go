@@ -18,6 +18,8 @@ func main() {
 		"The instance ID of the cluster member. If not supplied, then the instance ID is determined from EC2 metadata")
 	clusterTagName := flag.String("tag", "aws:autoscaling:groupName",
 		"The instance tag that is common to all members of the cluster")
+	clusterTagValue := flag.String("tag-value", "",
+		"The value of the tag used to describe cluster members. Default is the value of the tag in the current instance")
 	queueURL := flag.String("watch-queue", "",
 		"Monitor autoscaling lifecycle events for the current autoscaling group and print them to stdout as they occur")
 	flag.Parse()
@@ -33,6 +35,7 @@ func main() {
 	s := &ec2cluster.Cluster{
 		InstanceID: *instanceID,
 		TagName:    *clusterTagName,
+		TagValue:   *clusterTagValue,
 	}
 
 	s.AwsSession = session.New()
