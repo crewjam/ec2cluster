@@ -28,7 +28,7 @@ func DiscoverAvailabilityZone() (string, error) {
 func readMetadata(suffix string) (string, error) {
 	// a nice short timeout so we don't hang too much on non-AWS boxes
 	client := *http.DefaultClient
-	client.Timeout = 200 * time.Millisecond
+	client.Timeout = 700 * time.Millisecond
 
 	resp, err := client.Get("http://169.254.169.254/latest/meta-data/" + suffix)
 	if err != nil {
